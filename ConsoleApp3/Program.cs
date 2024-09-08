@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ConsoleApp3
+namespace AESDLab
 {
     internal class Program
     {
