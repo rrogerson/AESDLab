@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,24 +15,48 @@ namespace AESDLab
             var blockedDomains = await FetchBlockedDomainsList();
 
             // Convert blocked domains to lowercase for case-insensitive comparison
-            var blockedDomainSet = new HashSet<string>(blockedDomains.Select(domain => domain.ToLower()));
+            var blockedDomainSet = new HashSet<string>(blockedDomains.Select(domain => domain));
 
-            // Exclude URLs that contain any of the blocked domains
-            var filteredUrls = urlList
-                .Where(url => !blockedDomainSet.Any(blockedDomain => url.ToLower().StartsWith(blockedDomain)))
-                .ToList();
+            List<string> filteredUrlList = FilterUrlsByDomains(urlList, blockedDomainSet);
 
-            return filteredUrls;
+            return filteredUrlList;
         }
 
+        private List<string> FilterUrlsByDomains(List<string> urlList, HashSet<string> blockedDomainSet)
+        {
+            return urlList.Where(url =>
+            {
+                string domain = GetDomainFromUrl(url);
+                return !blockedDomainSet.Any(d=> domain.Equals(d, StringComparison.OrdinalIgnoreCase));
+            }).ToList();
+        }
+        
+        private string GetDomainFromUrl(string url)
+        {
+            try
+            {
+                var uri = new Uri(url);
+                string host = uri.Host;
+                string[] domainParts = host.Split('.');
+                if(domainParts.Length >= 2)
+                {
+                    return string.Join(".", domainParts.Skip(1));
+                }
+                return host;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
 
         public async Task<List<string>> FetchUrlList()
         {
             return [
-                "google.com/default",
-                "microsoft.com",
-                "bbc.co.uk/news/articles/xyz",
-                "amazon.com"
+                "https://www.google.com/default",
+                "https://www.microsoft.com",
+                "https://www.bbc.co.uk/news/articles/xyz",
+                "https://www.amazon.com"
             ];
 
         }
