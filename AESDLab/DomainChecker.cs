@@ -18,7 +18,7 @@ namespace AESDLab
 
             // Exclude URLs that contain any of the blocked domains
             var filteredUrls = urlList
-                .Where(url => !blockedDomainSet.Any(blockedDomain => url.ToLower().Contains(blockedDomain)))
+                .Where(url => !blockedDomainSet.Any(blockedDomain => url.ToLower().StartsWith(blockedDomain)))
                 .ToList();
 
             return filteredUrls;
@@ -39,7 +39,7 @@ namespace AESDLab
         {
 
             return [
-                "bbc.co.uk", "linkedin.com", "amazon.com"
+                "bbc.co.uk", "linkedin.com", "zon.com"
             ];
 
         }
